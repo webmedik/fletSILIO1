@@ -73,38 +73,38 @@ jobs:
             artifact_path: build/web
             needs_linux_deps: false
 
-steps:
-  - name: Checkout repository
-    uses: actions/checkout@v4
-
-  - name: Setup uv
-    uses: astral-sh/setup-uv@v6
-
-  - name: Install Linux dependencies
-    if: matrix.needs_linux_deps
-    shell: bash
-    run: |
-        sudo apt update --allow-releaseinfo-change
-        sudo apt install git -y
-        sudo apt-get install -y --no-install-recommends \
-            clang \
-            libgtk-3-dev \
-            cmake \
-            ninja-build \
-            pkg-config 
-            lld
-        python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        sudo apt-get clean
-  - name: Build app
-    shell: bash
-    run: |
-      uv run ${{ matrix.build_cmd }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
     
-  - name: Upload Artifact
-    uses: actions/upload-artifact@v5.0.0
-    with:
-      name: ${{ matrix.name }}-build-artifact
-      path: ${{ matrix.artifact_path }}
-      if-no-files-found: error
-      overwrite: false
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+    
+      - name: Install Linux dependencies
+        if: matrix.needs_linux_deps
+        shell: bash
+        run: |
+            sudo apt update --allow-releaseinfo-change
+            sudo apt install git -y
+            sudo apt-get install -y --no-install-recommends \
+                clang \
+                libgtk-3-dev \
+                cmake \
+                ninja-build \
+                pkg-config 
+                lld
+            python -m pip install --upgrade pip
+            if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+            sudo apt-get clean
+      - name: Build app
+        shell: bash
+        run: |
+          uv run ${{ matrix.build_cmd }}
+        
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v5.0.0
+        with:
+          name: ${{ matrix.name }}-build-artifact
+          path: ${{ matrix.artifact_path }}
+          if-no-files-found: error
+          overwrite: false
